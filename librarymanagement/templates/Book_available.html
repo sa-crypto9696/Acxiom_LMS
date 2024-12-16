@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Availability</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 80%;
+        margin: auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #4caf50;
+        color: white;
+        border-radius: 8px 8px 0 0;
+      }
+      .navbar div {
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .navbar a {
+        color: white;
+        text-decoration: none;
+      }
+      .actions {
+        text-align: center;
+        margin: 20px 0;
+      }
+      .actions a {
+        margin: 0 15px;
+        text-decoration: none;
+        font-weight: bold;
+        color: #4caf50;
+      }
+      .actions a.disabled {
+        color: grey;
+        pointer-events: none;
+      }
+      .actions a:hover:not(.disabled) {
+        text-decoration: underline;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+      .logout {
+        text-align: right;
+        margin-top: 20px;
+      }
+      .logout button {
+        background: none;
+        border: none;
+        color: #4caf50;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="navbar">
+        <div>Chart</div>
+        <a href="{{ url_for('home_redirect') }}">Home</a>
+      </div>
+
+      <div class="actions">
+        <a href="#">Is book available?</a>
+        <a href="#">Issue book?</a>
+        <a href="#">Return book?</a>
+        <a href="#">Pay Fine?</a>
+      </div>
+
+      <table>
+        <tr>
+          <th colspan="2">Book Availability</th>
+        </tr>
+        <tr>
+          <td>Enter Book Name</td>
+          <td>
+            <select>
+              <option value="">Select</option>
+              <option value="book1">Science</option>
+              <option value="book2">Economics</option>
+              <option value="book2">Fiction</option>
+              <option value="book2">Children</option>
+              <option value="book2">Personal Development</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Enter Author</td>
+          <td>
+            <select>
+              <option value="">Select</option>
+              <option value="author1">Author 1</option>
+              <option value="author2">Author 2</option>
+              <option value="author2">Author 3</option>
+              <option value="author2">Author 4</option>
+              <option value="author2">Author 5</option>
+              <option value="author2">Author 6</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+
+      <div class="actions">
+        <a href="{{ url_for('maintenance_home') }}">Back</a>
+        <a href="{{ url_for('Search_result') }}">Search</a>
+      </div>
+      <!-- Logout Button -->
+      <div class="logout">
+        <form action="{{ url_for('logout') }}" method="post">
+          <button type="submit">Log Out</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

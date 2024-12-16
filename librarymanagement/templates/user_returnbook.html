@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+        .navbar div {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+        }
+        .sidebar {
+            margin-bottom: 20px;
+        }
+        .sidebar a {
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .sidebar a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4caf50;
+            color: white;
+        }
+        .actions {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .actions button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .actions button:hover {
+            background-color: #0056b3;
+        }
+        .actions a {
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #4caf50;
+          }
+          .logout {
+            text-align: right;
+            margin-top: 20px;
+          }
+          .logout button {
+            background: none;
+            border: none;
+            color: #4caf50;
+            text-decoration: underline;
+            cursor: pointer;
+          }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div>Transactions</div>
+            <a href="#">Home</a>
+        </div>
+
+        <div class="actions">
+            <a href="#">Is book available?</a>
+            <a href="#">Issue book?</a>
+            <a href="#">Return book?</a>
+            <a href="#">Pay Fine?</a>
+        </div>
+
+        <table>
+            <tr>
+                <th>Return Book</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td>Enter Book Name</td>
+                <td>
+                    <select>
+                        <option value="book1">Book 1</option>
+                        <option value="book2">Book 2</option>
+                    </select>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Enter Author</td>
+                <td><textarea rows="2" cols="20"></textarea></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Serial No</td>
+                <td>
+                    <select>
+                        <option value="serial1">Serial 1</option>
+                        <option value="serial2">Serial 2</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Issue Date</td>
+                <td><input type="text" placeholder="Enter issue date"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Return Date</td>
+                <td><input type="date"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Remarks</td>
+                <td><textarea rows="3" cols="30"></textarea></td>
+            </tr>
+        </table>
+
+        <div class="actions">
+            <a href="{{ url_for('transactions_page') }}">Back</a>
+            <a href="#">Search</a>
+        </div>
+         <!-- Logout Button -->
+      <div class="logout">
+        <form action="{{ url_for('logout') }}" method="post">
+          <button type="submit">Log Out</button>
+        </form>
+      </div>
+
+    </div>
+</body>
+</html>

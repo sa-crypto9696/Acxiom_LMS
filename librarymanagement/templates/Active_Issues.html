@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Issues</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 80%;
+        margin: auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color:rgb(175, 120, 76);
+        color: white;
+        border-radius: 8px 8px 0 0;
+      }
+      .navbar div {
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .navbar a {
+        color: white;
+        text-decoration: none;
+      }
+      .actions {
+        text-align: center;
+        margin: 20px 0;
+      }
+      .actions a {
+        margin: 0 15px;
+        text-decoration: none;
+        font-weight: bold;
+        color: #4caf50;
+      }
+      .actions a.disabled {
+        color: grey;
+        pointer-events: none;
+      }
+      .actions a:hover:not(.disabled) {
+        text-decoration: underline;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+      .logout {
+        text-align: right;
+        margin-top: 20px;
+      }
+      .logout button {
+        background: none;
+        border: none;
+        color: #4caf50;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div>Active Issues </div>
+        <a href="{{ url_for('home_redirect') }}">Home</a>
+    </div>
+    <div class="container">
+        <div class="actions">
+            <a href="#">Master List of Books</a>
+            <a href="#">Master List of Movies</a>
+            <a href="#">Master List of Memberships</a>
+            <a href="#">Active Issues</a>
+            <a href="#">Overdue Returns</a>
+            <a href="#" class="disabled">Issue Requests</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Serial No Book/Movie</th>
+                    <th>Name of Book/Movie</th>
+                    <th>Membership ID </th>
+                    <th>Date of Issues </th>
+                    <th>Date of Return</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="actions">
+            <a href="{{ url_for('reports') }}">Back</a>
+          </div>
+        <!-- Logout Button -->
+      <div class="logout">
+        <form action="{{ url_for('logout') }}" method="post">
+          <button type="submit">Log Out</button>
+        </form>
+      </div>
+    </div>
+</body>
+</html>
