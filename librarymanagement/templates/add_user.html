@@ -105,37 +105,35 @@
         <h3>User Management</h3>
         <form action="#" method="post" onsubmit="return validateForm()">
             <!-- Radio Buttons for New or Existing User -->
-            <label>Select User Type:</label>
-            <div class="radio-group">
-                <label><input type="radio" name="userType" value="newUser" required> New User</label>
-                <label><input type="radio" name="userType" value="existingUser"> Existing User</label>
-            </div>
+            <label for="full_name">Full Name:</label>
+            <input type="text" id="full_name" name="full_name" required><br>
+        
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br>
+        
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br>
+        
+            <label for="phone_number">Phone Number:</label>
+            <input type="text" id="phone_number" name="phone_number"><br>
 
-            <!-- Input for Name -->
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" required>
-
-            <!-- Checkbox for Status (Active) -->
-            <label>Status:</label>
-            <div class="checkbox-group">
-                <label><input type="checkbox" id="status" name="status"> Active</label>
-            </div>
-
-            <!-- Checkbox for Admin -->
-            <label>Admin Privileges:</label>
-            <div class="checkbox-group">
-                <label><input type="checkbox" id="admin" name="admin"> Admin</label>
-            </div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br>
+        
+            <label for="role">Role:</label>
+            <select id="role" name="role">
+                <option value="User">user</option>
+                <option value="Admin">admin</option>
+            </select><br>
 
             <button type="submit">Submit</button>
         </form>
     </div>
-
-    <!-- Logout Button -->
     <div class="logout">
-        <button>Log Out</button>
+        <form action="{{ url_for('logout') }}" method="post">
+            <button type="submit">Log Out</button>
+        </form>
     </div>
-
     <!-- Footer -->
     <div class="footer">
         Made by Saif Mohammad
@@ -144,16 +142,62 @@
     <!-- Validation Script -->
     <script>
         function validateForm() {
-            let name = document.getElementById('name').value.trim();
-            let userType = document.querySelector('input[name="userType"]:checked');
-
-            if (!name || !userType) {
-                alert("Please fill all the required fields.");
+            // Retrieve form inputs
+            let fullName = document.getElementById('full_name').value.trim();
+            let username = document.getElementById('username').value.trim();
+            let email = document.getElementById('email').value.trim();
+            let phoneNumber = document.getElementById('phone_number').value.trim();
+            let password = document.getElementById('password').value.trim();
+            let role = document.getElementById('role').value;
+    
+            // Full Name Validation
+            if (!fullName) {
+                alert("Full Name is required.");
+                document.getElementById('full_name').focus();
+                return false;
+            }
+    
+            // Username Validation
+            if (!username) {
+                alert("Username is required.");
+                document.getElementById('username').focus();
+                return false;
+            }
+    
+            // Email Validation
+            let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert("Please enter a valid email address.");
+                document.getElementById('email').focus();
+                return false;
+            }
+    
+            // Phone Number Validation (optional)
+            if (phoneNumber && isNaN(phoneNumber)) {
+                alert("Phone Number must be numeric.");
+                document.getElementById('phone_number').focus();
+                return false;
+            }
+    
+            // Password Validation
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters long.");
+                document.getElementById('password').focus();
                 return false;
             }
 
+    
+            // Role Validation
+            if (!role) {
+                alert("Please select a Role.");
+                document.getElementById('role').focus();
+                return false;
+            }
+    
+            // All validations passed
             return true;
         }
     </script>
+    
 </body>
 </html>

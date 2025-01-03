@@ -101,18 +101,15 @@
 
     <!-- Add/Update Book or Movie Form -->
     <div class="menu-section">
-        <h3>Add/Update Book or Movie</h3>
+        <h3>Add Book</h3>
         <form action="#" method="post" onsubmit="return validateForm()">
-            <!-- Radio Buttons for Book or Movie -->
-            <label>Select Type:</label>
-            <div class="radio-group">
-                <label><input type="radio" name="mediaType" value="book" required> Book</label>
-                <label><input type="radio" name="mediaType" value="movie"> Movie</label>
-            </div>
+
+            <label for="Code">Code No</label>
+            <input type="text" id="Code" name="Code" required>
 
             <!-- Input for Book/Movie Name -->
-            <label for="bookMovieName">Book/Movie Name</label>
-            <input type="text" id="bookMovieName" name="bookMovieName" required>
+            <label for="bookName">Book Name</label>
+            <input type="text" id="bookName" name="bookName" required>
 
             <!-- Calendar for Date of Procurement -->
             <label for="procurementDate">Date of Procurement</label>
@@ -126,11 +123,11 @@
         </form>
     </div>
 
-    <!-- Logout Button -->
     <div class="logout">
-        <button>Log Out</button>
+        <form action="{{ url_for('logout') }}" method="post">
+            <button type="submit">Log Out</button>
+        </form>
     </div>
-
     <!-- Footer -->
     <div class="footer">
         Made by Saif Mohammad
@@ -139,10 +136,10 @@
     <!-- Validation Script -->
     <script>
         function validateForm() {
-            let bookMovieName = document.getElementById('bookMovieName').value.trim();
+            let Code = document.getElementById('Code').value;
+            let bookName = document.getElementById('bookName').value.trim();
             let procurementDate = document.getElementById('procurementDate').value;
             let quantity = document.getElementById('quantity').value;
-            let mediaType = document.querySelector('input[name="mediaType"]:checked');
 
             if (!bookMovieName || !procurementDate || !mediaType || quantity <= 0) {
                 alert("Please fill all the fields correctly.");

@@ -107,23 +107,27 @@
     <!-- Update Membership Form -->
     <div class="menu-section">
         <h3>Update Membership</h3>
-        <form action="#" method="post" onsubmit="return validateForm()">
-            <label for="membershipNumber">Membership Number</label>
-            <input type="text" id="membershipNumber" name="membershipNumber" required>
-
+        <form id="updateMembershipForm" action="#" method="post" onsubmit="return validateForm()">
+            <label>Membership Type:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="membershipType" value="six_months" required> Six Months</label>
+                <label><input type="radio" name="membershipType" value="one_year"> One Year</label>
+                <label><input type="radio" name="membershipType" value="two_years"> Two Years</label>
+            </div>
             <label for="startDate">Start Date</label>
             <input type="date" id="startDate" name="startDate" required>
 
             <label for="endDate">End Date</label>
             <input type="date" id="endDate" name="endDate" required>
 
-            <label>Membership Extension:</label>
-            <div class="radio-group">
-                <label><input type="radio" name="membershipExtension" value="six_months" required> Six Months</label>
-                <label><input type="radio" name="membershipExtension" value="one_year"> One Year</label>
-                <label><input type="radio" name="membershipExtension" value="two_years"> Two Years</label>
-                <label><input type="radio" name="membershipExtension" value="remove_membership"> Remove Membership</label>
-            </div>
+            <label for="username">User Name</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required>
 
             <button type="submit">Submit</button>
         </form>
@@ -131,24 +135,37 @@
 
     <!-- Logout Button -->
     <div class="logout">
-        <button>Log Out</button>
+        <form action="{{ url_for('logout') }}" method="post">
+            <button type="submit">Log Out</button>
+        </form>
     </div>
 
     <!-- Validation Script -->
     <script>
         function validateForm() {
-            let membershipNumber = document.getElementById('membershipNumber').value.trim();
+            let membershipType = document.getElementById('membershipType').value;
             let startDate = document.getElementById('startDate').value;
             let endDate = document.getElementById('endDate').value;
-            let membershipExtension = document.querySelector('input[name="membershipExtension"]:checked');
+            let username = document.getElementById('username').value;
+            let email = document.getElementById('email').value;
+            let phone = document.getElementById('phone').value;
 
-            if (!membershipNumber || !startDate || !endDate || !membershipExtension) {
-                alert("Please fill all the fields.");
+            if (!membershipType || !startDate || !endDate || !username || !email || !phone) {
+                alert("Please fill all the fields correctly.");
                 return false;
             }
 
-            alert("Updated successfully!");
-            return true; // Allow form submission
+            if (new Date(startDate) >= new Date(endDate)) {
+                alert("End date must be after the start date.");
+                return false;
+            }
+
+            if (!/^\d{10}$/.test(phone)) {
+                alert("Please enter a valid 10-digit phone number.");
+                return false;
+            }
+
+            return true;
         }
     </script>
 </body>

@@ -1,13 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from pymongo import MongoClient
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
+# MongoDB connection
+client = MongoClient("mongodb://localhost:27017")  # Replace with your MongoDB URI
+db = client["library_db"]  # Replace with your database name
+books = db["books"] 
+
+
+
 # Hardcoded credentials for demo purposes
-users = {
-    'admin': {'password': 'admin123', 'role': 'admin'},
-    'user': {'password': 'user123', 'role': 'user'}
-}
+# users = {
+#     'admin': {'password': 'admin123', 'role': 'admin'},
+#     'user': {'password': 'user123', 'role': 'user'}
+# }
 
 @app.route('/')
 def home():
@@ -19,37 +27,46 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
-        if username in users and users[username]['password'] == password:
-            session['username'] = username
-            session['role'] = users[username]['role']
+        
+        user = db.users.find_one({"username": username, "password": password})
+        if user:
+            session['username'] = user['username']
+            session['role'] = user['role']
             
-            # Redirect based on role
-            if users[username]['role'] == 'admin':
-                return redirect(url_for('admin_page'))
-            else:
+            if user['role'] == 'user':
                 return redirect(url_for('user_page'))
+            elif user['role'] == 'admin':
+                return redirect(url_for('admin_page'))
         else:
             flash('Invalid Credentials. Please try again.')
             return redirect(url_for('home'))
 
     return render_template('index.html')
-
 @app.route('/admin')
 def admin_page():
     if session.get('role') == 'admin':
-        return render_template('admin.html', username=session['username'])
+        books = list(db.books.find())
+
+        return render_template('admin.html', books= books, username=session['username'])
     else:
         flash('Unauthorized access!')
         return redirect(url_for('home'))
+    
 
 @app.route('/user')
 def user_page():
+    # Check if the user's role is 'user'
     if session.get('role') == 'user':
-        return render_template('user.html', username=session['username'])
+        # Fetch books from the database
+        books = list(db.books.find())
+        
+        # Render the admin page with books data (if applicable)
+        return render_template('user.html', books=books, username=session['username'])
     else:
+        # Flash unauthorized access message and redirect
         flash('Unauthorized access!')
         return redirect(url_for('home'))
+
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -74,14 +91,45 @@ def admin_book_issue():
         flash('Unauthorized access!')
         return redirect(url_for('home'))
 #user issue book
-@app.route('/user_book_issue')
+@app.route('/user_book_issue', methods=['POST', 'GET'])
 def user_book_issue():
     if session.get('role') == 'user':
+        if request.method == 'POST':
+            Code = int(request.form.get('Code'))
+            bookName = request.form.get('BookName')
+            issue_date = request.form.get('issueDate')
+            return_date = request.form.get('returnDate')
+            Remarks = request.form.get('remarks')
+            username = session.get('username')
+
+
+            if bookName and issue_date and return_date:
+                db.Issued_books.insert_one({
+            # "user_id": session['username'],
+                "Code":Code,
+                "book_name": bookName,
+                "issue_date": issue_date,
+                "return_date": return_date,
+                "remarks": Remarks,
+                "username": username,
+                })
+
+            # Decrease the book quantity by 1
+                result = db.books.update_one(
+                    {"Code": Code},  # Find the book by Code_No
+                    {"$inc": {"quantity": -1}}  # Decrease quantity
+                )
+
+            # Check if the update was successful
+                if result.matched_count > 0 and result.modified_count > 0:
+                    flash("Book issued successfully!", "success")
+                else:
+                    flash("Book issue failed: Book not found or insufficient quantity.", "error")
+                return redirect(url_for('user_page'))
+
+        flash("Unauthorized access!", "error")
         return render_template('user_bookIssue.html')
-    else:
-        flash('Unauthorized access!')
-        return redirect(url_for('home'))
-    
+
 @app.route('/transactions')
 def transactions_page():
     if 'role' in session:
@@ -107,9 +155,6 @@ def admin_returnbook():
         return_date = request.form.get('returnDate')
         remarks = request.form.get('remarks')
 
-        # Process the form data as needed
-
-        # Redirect to the admin transactions page or another page
         return redirect(url_for('admin_transactions'))
 
     return render_template('admin_returnbook.html')
@@ -181,35 +226,51 @@ def maintenance_home():
 @app.route('/add_membership', methods=['GET', 'POST'])
 def add_membership():
     if request.method == 'POST':
-        membership_type = request.form.get('membershipType')
-        if not membership_type:
-            error_message = "Please select a membership type."
-            return render_template('add_membership.html', error_message=error_message)
-        
-        # Process the membership addition (e.g., save to database)
-        return redirect(url_for('maintenance_home'))  # Redirect to the maintenance home or another relevant page
-        
+        membership_Type = request.form.get('membershipType')
+        start_Date = request.form.get('startDate')
+        End_Date = request.form.get('endDate')
+        User_Name = request.form.get('username')
+        Email = request.form.get('email')
+        Phone_Number = request.form.get('phone')
+
+        if membership_Type and start_Date and End_Date and User_Name and Email and Phone_Number:
+            db.Membership_dt.insert_one({
+                "membership_type": membership_Type,
+                "start_Date": start_Date,
+                "End_Date": End_Date,
+                "User_Name": User_Name,
+                "Email": Email,
+                "Phone_Number": Phone_Number
+            })
+            return redirect(url_for('admin_page'))
+                   
     return render_template('add_membership.html')
+
 @app.route('/update_membership', methods=['GET', 'POST'])
 def update_membership():
+    username = request.form.get('username') 
+    # membership = db.Membership_dt.find_one({"User_Name": username})
     if request.method == 'POST':
-        # Retrieve form data
-        membership_number = request.form.get('membershipNumber')
-        start_date = request.form.get('startDate')
-        end_date = request.form.get('endDate')
-        membership_extension = request.form.get('membershipExtension')
+        membership_Type = request.form.get('membershipType')
+        start_Date = request.form.get('startDate')
+        End_Date = request.form.get('endDate')
+        User_Name = request.form.get('username')
+        Email = request.form.get('email')
+        Phone_Number = request.form.get('phone')
 
-        # Basic validation
-        if not membership_number or not start_date or not end_date or not membership_extension:
-            flash('Please fill all the fields.', 'error')
-            return redirect(url_for('update_membership'))
-
-        # Process the form data (e.g., update the database)
-        # Example:
-        # update_membership_in_db(membership_number, start_date, end_date, membership_extension)
-
-        flash('Membership updated successfully!', 'success')
-        return redirect(url_for('admin_home_page'))
+        if membership_Type and start_Date and End_Date and User_Name and Email and Phone_Number:
+            db.Membership_dt.update_one(
+                {"User_Name": username}, 
+                {"$set": {
+                    "membership_type": membership_Type,
+                    "start_Date": start_Date,
+                    "End_Date": End_Date,
+                    "User_Name": User_Name,
+                    "Email": Email,
+                    "Phone_Number": Phone_Number
+                }}
+            )
+            return redirect(url_for('admin_page'))
 
     return render_template('update_membership.html')
 @app.route('/add_update_media', methods=['GET', 'POST'])
@@ -218,25 +279,27 @@ def update_membership():
 def add_book():
     if request.method == 'POST':
         # Retrieve form data
-        media_type = request.form.get('mediaType')
-        book_movie_name = request.form.get('bookMovieName')
+        Code = int(request.form.get("Code"))
+        Book_Name = request.form.get('bookName')
         procurement_date = request.form.get('procurementDate')
-        quantity = request.form.get('quantity')
+        quantity = int(request.form.get('quantity'))
 
         # Check if all fields are filled and quantity is valid
-        if media_type and book_movie_name and procurement_date and int(quantity) > 0:
-            # Process the form data (e.g., save to database)
-            # For now, let's print it to the console
-            print(f"Type: {media_type}, Name: {book_movie_name}, Date: {procurement_date}, Quantity: {quantity}")
-
-            # Redirect to a success page or another route after processing
-            return redirect(url_for('User_success_page'))  # Change 'success_page' to your actual success route
-
-        else:
+        if  Book_Name and procurement_date and int(quantity) > 0:
+            db.books.insert_one({
+                "Code": Code,
+                "Book_Name": Book_Name,
+                "procurement_date": procurement_date,
+                "quantity": quantity 
+            })
+            # flash("Book added successfully!", "success")
+            return redirect(url_for('admin_page'))           
+         # Redirect to a success page or another route after processing# Change 'success_page' to your actual success rout
+        # else:
             # If validation fails, reload the form with an error message
-            error_message = "Please fill all the fields correctly."
-            return render_template('add_book.html', error_message=error_message)
-    
+            # error_message = "Please fill all the fields correctly."
+            # return render_template('add_book.html', error_message=error_message)
+            # flash("Please fill all fields correctly.", "error")
     # Render the form for GET requests
     return render_template('add_book.html')
 
@@ -252,21 +315,15 @@ def update_page():
 def update_book():
     if request.method == 'POST':
         # Retrieve form data
-        media_type = request.form.get('mediaType')
-        book_movie_name = request.form.get('bookMovieName')
-        serial_no = request.form.get('serialNo')
-        status = request.form.get('status')
-        date = request.form.get('date')
+        Code = int(request.form.get("Code"))
+        Book_Name = request.form.get('bookName')
+        procurement_date = request.form.get('procurementDate')
+        quantity = int(request.form.get('quantity'))
 
         # Check if all fields are filled
-        if media_type and book_movie_name and serial_no and status and date:
-            # Process the form data (e.g., update in database)
-            # For now, let's print it to the console
-            print(f"Type: {media_type}, Name: {book_movie_name}, Serial No: {serial_no}, Status: {status}, Date: {date}")
-
-            # Redirect to a success page or another route after processing
-            return redirect(url_for('update_page'))  # Change 'success_page' to your actual success route
-
+        if Book_Name and procurement_date and quantity:
+            db.books.update_one({"Code": Code},{"$set": {"Book_Name": Book_Name, "procurement_date": procurement_date, "quantity": quantity}})
+            return redirect(url_for('admin_page'))
         else:
             # If validation fails, reload the form with an error message
             error_message = "Please fill all the required fields."
@@ -278,53 +335,71 @@ def update_book():
 def add_user():
     if request.method == 'POST':
         # Retrieve form data
-        user_type = request.form.get('userType')
-        name = request.form.get('name').strip()
-        status = 'status' in request.form  # Checkbox status
-        is_admin = 'admin' in request.form  # Checkbox status
+        full_name = request.form.get('full_name')
+        username = request.form.get('username')
+        email = request.form.get('email')
+        phone_number = request.form.get('phone_number')
+        password = request.form.get('password')
+        role = request.form.get('role')
+        # Validate required fields
+        if not full_name or not username or not email or not phone_number or not password or not role:
+            flash('All required fields must be filled!', 'error')
+            return render_template('add_user.html')
 
-        # Check if all required fields are filled
-        if user_type and name:
-            # Process the form data (e.g., add/update user in database)
-            # For now, let's print it to the console
-            print(f"User Type: {user_type}, Name: {name}, Status: {'Active' if status else 'Inactive'}, Admin: {'Yes' if is_admin else 'No'}")
+        # Check if the username or email already exists
+        if db.Add_user.find_one({'username': username}) or db.Add_user.find_one({'email': email}):
+            flash('Username or email already exists!', 'error')
+            return render_template('add_user.html')
 
-            # Redirect to a success page or another route after processing
-            return redirect(url_for('success_page'))  # Change 'success_page' to your actual success route
+        # Hash the password for secure storage
+        # hashed_password = generate_password_hash(password)
 
-        else:
-            # If validation fails, reload the form with an error message
-            error_message = "Please fill all the required fields."
-            return render_template('add_user.html', error_message=error_message)
-    
-    # Render the form for GET requests
+        # Insert the user data into the database
+        user_data = {
+            "full_name": full_name,
+            "username": username,
+            "email": email,
+            "phone_number": phone_number,
+            "password": password,
+            "role": role,
+        }
+
+        db.Add_user.insert_one(user_data)
+        db.users.insert_one(user_data)
+        flash('User added successfully!', 'success')
+        return redirect(url_for('admin_page'))
+
     return render_template('add_user.html')
+
+
 @app.route('/update_user', methods=['GET', 'POST'])
 def update_user():
     if request.method == 'POST':
+        username = request.form.get('username') 
         # Retrieve form data
-        user_select = request.form.get('userSelect')
-        name = request.form.get('name').strip()
-        status = 'status' in request.form  # Checkbox status
-        is_admin = 'admin' in request.form  # Checkbox status
-
-        # Check if all required fields are filled
-        if user_select and name:
-            # Process the form data (e.g., update user in database)
-            # For now, let's print it to the console
-            print(f"Selected User: {user_select}, Updated Name: {name}, Status: {'Active' if status else 'Inactive'}, Admin: {'Yes' if is_admin else 'No'}")
-
-            # Redirect to a success page or another route after processing
-            return redirect(url_for('success_page'))  # Change 'success_page' to your actual success route
-
-        else:
-            # If validation fails, reload the form with an error message
-            error_message = "Please select a user and fill in the required fields."
-            return render_template('update_user.html', error_message=error_message)
+        full_name = request.form.get('full_name')
+        username = request.form.get('username')
+        email = request.form.get('email')
+        phone_number = request.form.get('phone_number')
+        password = request.form.get('password')
+        role = request.form.get('role')
     
-    # Render the form for GET requests
+        # Check if all required fields are filled
+        if full_name and username and email and phone_number and password and role:
+            db.Add_user.update_one(
+                {"username": username}, 
+                {"$set": {
+                    "full_name": full_name,
+                    "email": email,
+                    "phone_number": phone_number,
+                    "password": password,
+                    "role": role,
+                }}
+            )
+            return redirect(url_for('admin_page'))
+        
     return render_template('update_user.html')
-#search form
+    
 
 books = [
     {"name": "Book A", "author": "Author A", "serial": 12345, "available": "Y"},
@@ -365,12 +440,14 @@ def reports():
 
 @app.route('/book-availability')
 def book_availability():
-    return render_template('Book_available.html')
 
+    return render_template('Book_available.hmtl')
 
 @app.route('/Search-results')
 def Search_result():
-    return render_template('Search_result.html')
+    books = list(db.books.find())
+
+    return render_template('Search_result.html',books=books)
 
 @app.route('/M_book_list')
 def Master_book_list():
@@ -393,9 +470,69 @@ def Overdue_returns():
     return render_template('Overdue_returns.html')
 
 
-@app.route('/Issue_request')
+@app.route('/Issue_request')    
 def Issue_request():
-    return render_template('Issue_request.html')
+    # if session.get('role') == 'user':
+    #     # Retrieve form data
+    #     Code_No = request.form.get('CodeNo')
+    #     Book_name = request.form.get('BookName')
+    #     issue_date = request.form.get('issueDate')
+    #     return_date = request.form.get('returnDate')
+    #     Remark = request.form.get('remarks')
+
+    #     # # Validate input fields
+    #     # if not Code_No or not issue_date or not return_date:
+    #     #     flash("All fields are required!", "error")
+    #     #     return redirect(url_for('user_page'))
+
+    #     # try:
+    #     #     # Cast Code_No to the correct type if necessary
+    #     #     Code_No = int(Code_No)
+
+    #     #     # Fetch book details from the database
+    #     #     book = db.books.find_one({"_id": Code_No})
+
+    #     #     if not book:
+    #     #         # Book does not exist in the database
+    #     #         flash("Invalid book code. Please try again.", "error")
+    #     #         return redirect(url_for('user_page'))
+
+    #     #     # Check if the book is available
+    #     #     if book.get("available") == "N":
+    #     #         # Book is already issued
+    #     #         flash(f"Book '{book.get('title', 'Unknown')}' is currently issued to another user.", "error")
+    #     #         return redirect(url_for('user_page'))
+
+    #         # # Fetch book status (optional, for display purposes)
+    #         # book_status = book.get("status", "No status available")
+    #         # flash(f"Book Status: {book_status}", "info")
+
+    #         # Insert a new record into the Issued_books collection
+    #     db.Issued_books.insert_one({
+    #         # "user_id": session['username'],
+    #         "Code_No": Code_No,
+    #         "book_name":Book_name,
+    #         "issue_date": issue_date,
+    #         "return_date": return_date,
+    #         "remark":Remark
+    #     })
+
+    #         # Update book availability in the books collection
+    #         # db.books.update_one(
+    #         #     {"_id": Code_No},
+    #         #     {"$set": {"available": "N", "status": "issued"}}
+    #         # )
+    #     return redirect(url_for('user_page'))
+
+        # except Exception as e:
+        #     # Handle unexpected errors
+        #     flash(f"An error occurred: {str(e)}", "error")
+        #     return redirect(url_for('user_page'))
+
+    # Unauthorized access
+    # # flash("Unauthorized access!", "error")
+    return render_template('user_bookIssue.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

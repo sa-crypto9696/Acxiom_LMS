@@ -39,20 +39,20 @@
         .actions {
             text-align: center;
             margin: 20px 0;
-          }
-          .actions a {
+        }
+        .actions a {
             margin: 0 15px;
             text-decoration: none;
             font-weight: bold;
             color: #4caf50;
-          }
-          .actions a.disabled {
+        }
+        .actions a.disabled {
             color: grey;
             pointer-events: none;
-          }
+        }
           .actions a:hover:not(.disabled) {
             text-decoration: underline;
-          }
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -106,40 +106,22 @@
 
         <table>
             <tr>
+                <th>Code No</th>
                 <th>Book Name</th>
-                <th>Author Name</th>
-                <th>Serial Number</th>
-                <th>Available</th>
-                <th>Select to Issue the Book</th>
+                <th>Procurement Date</th>
+                <th>Quantity</th>
             </tr>
-            <tr>
-                <td>A</td>
-                <td>Author Name</td>
-                <td>Serial Number</td>
-                <td>Y</td>
-                <td><input type="radio" name="selectBook"></td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>Author Name</td>
-                <td>Serial Number</td>
-                <td>Y</td>
-                <td><input type="radio" name="selectBook"></td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>Author Name</td>
-                <td>Serial Number</td>
-                <td>Y</td>
-                <td><input type="radio" name="selectBook"></td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>Author Name</td>
-                <td>Serial Number</td>
-                <td>N</td>
-                <td><input type="radio" name="selectBook"></td>
-            </tr>
+            <tbody>
+                <!-- Dynamically render the rows -->
+                {% for item in books %}
+                <tr>
+                <td>{{ item.Code}}</td>
+                <td>{{ item.Book_Name }}</td>
+                <td>{{ item.procurement_date }}</td>
+                <td>{{ item.quantity }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
 
         <div class="actions">

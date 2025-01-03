@@ -53,10 +53,60 @@
                 <option value="1_year">1 Year</option>
                 <option value="2_years">2 Years</option>
             </select>
-            
+
+            <label for="startDate"> Start Date</label>
+            <input type="date" id="startDate" name="startDate" required>
+
+            <label for="endDate"> End Date</label>
+            <input type="date" id="endDate" name="endDate" required>
+
+            <label for="username">User Name</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required>
+
             <button type="submit">Add Membership</button>
             <div class="error-message">{{ error_message }}</div>
         </form>
     </div>
+
+    <div class="logout">
+        <form action="{{ url_for('logout') }}" method="post">
+            <button type="submit">Log Out</button>
+        </form>
+    </div>
+
+     <!-- Validation Script -->
+     <script>
+        function validateForm() {
+            let membershipType = document.getElementById('membershipType').value;
+            let startDate = document.getElementById('startDate').value;
+            let endDate = document.getElementById('endDate').value;
+            let username = document.getElementById('username').value;
+            let email = document.getElementById('email').value;
+            let phone = document.getElementById('phone').value;
+
+            if (!membershipType || !startDate || !endDate || !username || !email || !phone) {
+                alert("Please fill all the fields correctly.");
+                return false;
+            }
+
+            if (new Date(startDate) >= new Date(endDate)) {
+                alert("End date must be after the start date.");
+                return false;
+            }
+
+            if (!/^\d{10}$/.test(phone)) {
+                alert("Please enter a valid 10-digit phone number.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </body>
 </html>

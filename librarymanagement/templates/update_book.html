@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Book/Movie</title>
+    <title>Update Book</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -99,45 +99,36 @@
         <div>Update Book/Movie</div>
     </div>
 
-    <!-- Update Book/Movie Form -->
+    <!-- Update Book form -->
     <div class="menu-section">
-        <h3>Update Book/Movie</h3>
+        <h3>Update Book</h3>
         <form action="#" method="post" onsubmit="return validateForm()">
-            <!-- Radio Buttons for Book or Movie -->
-            <label>Select Type:</label>
-            <div class="radio-group">
-                <label><input type="radio" name="mediaType" value="book" required> Book</label>
-                <label><input type="radio" name="mediaType" value="movie"> Movie</label>
-            </div>
-
-            <!-- Input for Book/Movie Name -->
-            <label for="bookMovieName">Book/Movie Name</label>
-            <input type="text" id="bookMovieName" name="bookMovieName" required>
 
             <!-- Serial Number Text Box -->
-            <label for="serialNo">Serial No</label>
-            <input type="text" id="serialNo" name="serialNo" required>
+            <label for="Code">Code No</label>
+            <input type="text" id="Code" name="Code" required>
 
-            <!-- Status Dropdown -->
-            <label for="status">Status</label>
-            <select id="status" name="status" required>
-                <option value="">Select Status</option>
-                <option value="available">Available</option>
-                <option value="issued">Issued</option>
-                <option value="reserved">Reserved</option>
-            </select>
+            <!-- Input for Book/Movie Name -->
+            <label for="bookName">Book Name</label>
+            <input type="text" id="bookName" name="bookName" required>
 
-            <!-- Calendar for Date -->
-            <label for="date">Date</label>
-            <input type="date" id="date" name="date" required>
+            <!-- Calendar for Date of Procurement -->
+            <label for="procurementDate">Date of Procurement</label>
+            <input type="date" id="procurementDate" name="procurementDate" required>
+
+            <!-- Quantity/Copies -->
+            <label for="quantity">Quantity/Copies</label>
+            <input type="number" id="quantity" name="quantity" value="1" min="1" required>
+
 
             <button type="submit">Submit</button>
         </form>
     </div>
 
-    <!-- Logout Button -->
     <div class="logout">
-        <button>Log Out</button>
+        <form action="{{ url_for('logout') }}" method="post">
+            <button type="submit">Log Out</button>
+        </form>
     </div>
 
     <!-- Footer -->

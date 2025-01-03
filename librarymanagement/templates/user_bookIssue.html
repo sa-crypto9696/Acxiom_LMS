@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Transactions</title>
+    <title>User Transactions</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -118,21 +118,23 @@
         }
     </style>
     <script>
-        function showSuccessPopup() {
-            alert("Transaction successful!");
-        }
-
         function validateForm() {
-            const selectBook = document.getElementById('issueBook');
-            if (selectBook.value === "") {
-                alert("Please select a book.");
-                selectBook.focus();
+            let Code = document.getElementById('Code').value;
+            let bookName = document.getElementById('BookName').value.trim();
+            let issueDate = document.getElementById('issueDate').value;
+            let returnDate = document.getElementById('returnDate').value;
+            let remarks = document.getElementById('remarks').value;
+
+
+            if (!CodeNo || !issueDateDate || !returnDate || !BookName) {
+                alert("Please fill all the fields correctly.");
                 return false;
             }
-            showSuccessPopup();
+
             return true;
         }
     </script>
+    
 </head>
 <body>
     <div class="container">
@@ -143,57 +145,30 @@
             <div><a href="#" class="back-button">Home</a></div>
         </div>
 
-        <!-- Table -->
-        <table>
-            <tr>
-                <th>Is book available?</th>
-                <td>Book Issue</td>
-            </tr>
-            <tr>
-                <th>Issue book?</th>
-                <td>
-                    <label for="issueBook">Select Book</label>
-                    <select name="issueBookDropdown" id="issueBook" required>
-                        <option value="">Select a book</option>
-                        <option value="book1">The Great Gatsby</option>
-                        <option value="book2">1984</option>
-                        <option value="book3">To Kill a Mockingbird</option>
-                        <option value="book4">The Catcher in the Rye</option>
-                        <option value="book5">Moby Dick</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th>Return book?</th>
-                <td>
-                    <label for="returnBook">Enter Book Name</label>
-                    <input type="text" id="returnBook" name="returnBook" placeholder="Enter book name">
-                </td>
-            </tr>
-            <tr>
-                <th>Issue Date</th>
-                <td>
-                    <input type="date" id="issueDate" name="issueDate">
-                </td>
-            </tr>
-            <tr>
-                <th>Return Date</th>
-                <td>
-                    <input type="date" id="returnDate" name="returnDate">
-                </td>
-            </tr>
-            <tr>
-                <th>Remarks</th>
-                <td>
-                    <textarea id="remarks" name="remarks" placeholder="Text area/Text Non Mandatory" rows="3"></textarea>
-                </td>
-            </tr>
-        </table>
+        <div class="menu-section">
+            <h3> Issue Book</h3>
+            <form action="#" method="post" onsubmit="return validateForm()">
+    
+                <label for="Code">Code No</label>
+                <input type="text" id="Code" name="Code" required>
+    
+                <!-- Input for Book/Movie Name -->
+                <label for="bookName">Book Name</label>
+                <input type="text" id="BookName" name="BookName" required>
+    
+                <!-- Calendar for Date of Procurement -->
+                <label for="issueDate">Issue Date</label>
+                <input type="date" id="issueDate" name="issueDate" required>
+    
+                <!-- Quantity/Copies -->
+                <label for="returnDate">Return Date</label>
+                <input type="date" id="returnDate" name="returnDate" required>
 
-        <!-- Buttons -->
-        <div class="actions">
-            <button type="button" class="cancel-button" onclick="window.location.href='/cancel'">Cancel</button>
-            <button type="button" class="confirm-button" onclick="validateForm()">Confirm</button>
+                <label for="remarks">Remark</label>
+                <input type="text" id="remarks" name="remarks" required>
+    
+                <button type="submit">Submit</button>
+            </form>
         </div>
 
         <!-- Logout Button -->
